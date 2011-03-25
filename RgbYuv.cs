@@ -74,10 +74,10 @@ namespace hqx
         public static unsafe void Initialize()
         {
             var lTable = new int[0x1000000]; // 256 * 256 * 256
-            fixed (int* lookupP = lookupTable)
+            fixed (int* lookupP = lTable)
             {
                 byte* lP = (byte*)lookupP;
-                for (uint i = 0; i < lookupTable.Length; i++)
+                for (uint i = 0; i < lTable.Length; i++)
                 {
                     float r = (i & 0xff0000) >> 16;
                     float g = (i & 0x00ff00) >> 8;
