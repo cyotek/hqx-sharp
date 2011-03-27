@@ -36,7 +36,12 @@ namespace hqx
     {
         const uint RgbMask = 0x00ffffff;
 
+#if EASYTHREADING
         private static volatile int[] lookupTable;
+#else
+        private static volatile int[] lookupTable;
+#endif
+
         private static int[] LookupTable
         {
             get
@@ -79,6 +84,10 @@ namespace hqx
                 byte* lP = (byte*)lookupP;
                 for (uint i = 0; i < lTable.Length; i++)
                 {
+#if EASYTHREADING
+                    if(lookupTable != null) return; // table was set by another thread
+#endif
+
                     float r = (i & 0xff0000) >> 16;
                     float g = (i & 0x00ff00) >> 8;
                     float b = (i & 0x0000ff);
