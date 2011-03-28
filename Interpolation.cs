@@ -31,11 +31,16 @@ namespace hqx
     /// <summary>
     /// Contains the color-blending operations used internally by hqx.
     /// </summary>
-    internal static class Interpolation
+    internal static class Interpolation //TODO Add alpha == 0 color ignore.
     {
         const uint Mask4 = 0xff000000;
         const uint Mask2 = 0x0000ff00;
         const uint Mask13 = 0x00ff00ff;
+
+#if ORIGINAL
+#else
+        const uint Mask123 = 0x00ffffff;
+#endif
 
         // return statements:
         //     1. line: green
@@ -48,8 +53,28 @@ namespace hqx
             if (c1 == c2)
             {
                 return c1;
-
             }
+
+#if ORIGINAL
+#else
+            if ((c1 & Mask4) == 0)
+            {
+                if ((c2 & Mask4) != 0)
+                {
+                    return (c2 & Mask123) |
+                    ((((c1 & Mask4) >> 2) * 3) & Mask4);
+                }
+            }
+            else
+            {
+                if ((c2 & Mask4) == 0)
+                {
+                    return (c1 & Mask123) |
+                    (((c2 & Mask4) >> 2) & Mask4);
+                }
+            }
+#endif
+
             return ((((c1 & Mask2) * 3 + (c2 & Mask2)) >> 2) & Mask2) |
                 ((((c1 & Mask13) * 3 + (c2 & Mask13)) >> 2) & Mask13) |
                 ((((c1 & Mask4) >> 2) * 3 + ((c2 & Mask4) >> 2)) & Mask4);
@@ -58,6 +83,9 @@ namespace hqx
         public static uint Mix2To1To1(uint c1, uint c2, uint c3)
         {
             //return (c1*2+c2+c3) >> 2;
+
+
+
             return ((((c1 & Mask2) * 2 + (c2 & Mask2) + (c3 & Mask2)) >> 2) & Mask2) |
                   ((((c1 & Mask13) * 2 + (c2 & Mask13) + (c3 & Mask13)) >> 2) & Mask13) |
                 ((((c1 & Mask4) >> 2) * 2 + ((c2 & Mask4) >> 2) + ((c3 & Mask4) >> 2)) & Mask4);
@@ -69,7 +97,6 @@ namespace hqx
             if (c1 == c2)
             {
                 return c1;
-
             }
             return ((((c1 & Mask2) * 7 + (c2 & Mask2)) >> 3) & Mask2) |
                 ((((c1 & Mask13) * 7 + (c2 & Mask13)) >> 3) & Mask13) |
@@ -90,7 +117,6 @@ namespace hqx
             if (c1 == c2)
             {
                 return c1;
-
             }
             return ((((c1 & Mask2) + (c2 & Mask2)) >> 1) & Mask2) |
                 ((((c1 & Mask13) + (c2 & Mask13)) >> 1) & Mask13) |
@@ -119,7 +145,6 @@ namespace hqx
             if (c1 == c2)
             {
                 return c1;
-
             }
             return ((((c1 & Mask2) * 5 + (c2 & Mask2) * 3) >> 3) & Mask2) |
                   ((((c1 & Mask13) * 5 + (c2 & Mask13) * 3) >> 3) & Mask13) |
