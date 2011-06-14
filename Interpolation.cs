@@ -37,11 +37,6 @@ namespace hqx
         const uint Mask2 = 0x0000ff00;
         const uint Mask13 = 0x00ff00ff;
 
-#if ORIGINAL
-#else
-        const uint Mask123 = 0x00ffffff;
-#endif
-
         // return statements:
         //     1. line: green
         //     2. line: red and blue
@@ -54,26 +49,6 @@ namespace hqx
             {
                 return c1;
             }
-
-#if ORIGINAL
-#else
-            if ((c1 & Mask4) == 0)
-            {
-                if ((c2 & Mask4) != 0)
-                {
-                    return (c2 & Mask123) |
-                    ((((c1 & Mask4) >> 2) * 3) & Mask4);
-                }
-            }
-            else
-            {
-                if ((c2 & Mask4) == 0)
-                {
-                    return (c1 & Mask123) |
-                    (((c2 & Mask4) >> 2) & Mask4);
-                }
-            }
-#endif
 
             return ((((c1 & Mask2) * 3 + (c2 & Mask2)) >> 2) & Mask2) |
                 ((((c1 & Mask13) * 3 + (c2 & Mask13)) >> 2) & Mask13) |
